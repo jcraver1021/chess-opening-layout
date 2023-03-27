@@ -2,9 +2,8 @@
 
 import chess
 import graphviz
+graphviz.set_jupyter_format('png')
 
-if False:
-    graphviz.set_jupyter_format('png')
 
 colors = {
     "??": "red",
