@@ -8,21 +8,22 @@ CHECK_PATTERN = '[+#]'
 ONCE_PATTERN = '{1}'
 MOVE_PATTERN = f'(?:{PAWN_PATTERN}|{PIECE_PATTERN}){ONCE_PATTERN}{CHECK_PATTERN}?'
 EVALUATION_PATTERN = '\?\?|\?|\?!|!\?|!|!!'
-MOVE_REGEX = re.compile(f'^(?P<move>{MOVE_PATTERN})(?P<eval>{EVALUATION_PATTERN})?$')
+MOVE_LABEL = 'move'
+EVAL_LABEL = 'eval'
+MOVE_REGEX = re.compile(f'^(?P<{MOVE_LABEL}>{MOVE_PATTERN})(?P<{EVAL_LABEL}>{EVALUATION_PATTERN})?$')
 
 class _Token:
     def __init__(self, s):
-        self.match = MOVE_REGEX.match(s)
-    
-    def is_chess_move(self):
-        return self.match is not None
+        self._match = MOVE_REGEX.match(s)
 
-def tokenize_line_by_move(line):
-    # try to tokenize it and join together stuff that's not a move
-    # like, you can have space characters and such
-    # so the start of a move is unambiguously a chess move, starting with the valid letters
-    # yield the things maybe
-    pass
+    def is_chess_move(self):
+        return self._match is not None
+
+    def get_move(self):
+        return self._match.group(MOVE_LABEL) if self.is_chess_move() else None
+
+    def get_evaluation(self):
+        return self._match.group(EVAL_LABEL) if self.is_chess_move() else None
 
 class Move:
     def __init__(self, position, label, evaluation=None, remarks=None, next_moves=None):
@@ -37,10 +38,3 @@ class Move:
             self.next_moves = next_moves
         else:
             self.next_moves = []
-    
-    @classmethod
-    def from_string(cls, last_position, move_string, evaluation):
-        # split and find the remarks, etc.
-        # nope, token is split by this point, so join the remarks, make the move, etc.
-        # TODO move to line class
-        pass

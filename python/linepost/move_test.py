@@ -2,7 +2,6 @@ import pytest
 import linepost.move as move
 
 # TODO: Generate these for more complete coverage
-
 @pytest.mark.parametrize("string,want_bool", [
     ('e4', True),
     ('c6', True),
@@ -61,3 +60,13 @@ def test_is_chess_move(string, want_bool):
     token = move._Token(string)
     got_bool = token.is_chess_move()
     assert want_bool == got_bool
+
+@pytest.mark.parametrize("string,want_move,want_eval", [
+    ('great move', None, None),
+    ('Nf3', 'Nf3', None),
+    ('Nf3!!', 'Nf3', '!!'),
+])
+def test_tokens(string, want_move, want_eval):
+    token = move._Token(string)
+    assert want_move == token.get_move()
+    assert want_eval == token.get_evaluation()
