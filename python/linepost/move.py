@@ -1,16 +1,14 @@
 import re
 
-MOVE_REGEX = re.compile(r'^((?:(?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?|(?:[NBRQK][a-h1-8]?x?[a-h][1-8])){1}[+#]?)(\?\?|\?|!|!\?|\?!|!!)?$')
-
-#TODO build these together with fstrings
-# (?:X) represents a non capturing group
-# coord: [a-h][1-8]
-# pawn: (?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?
-# piece: (?:[NBRQK][a-h1-8]?x?[a-h][1-8])
-# check: [+#]?
-# combination (capturable): ((?:(?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?|(?:[NBRQK][a-h1-8]?x?[a-h][1-8])){1}[+#]?)
-# evaluation (capturable): (\?\?|\?|!|!\?|\?!|!!)?
-# final: ((?:(?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?|(?:[NBRQK][a-h1-8]?x?[a-h][1-8])){1}[+#]?)(\?\?|\?|!|!\?|\?!|!!)?
+COORDINATE_PATTERN = f'[a-h][1-8]'
+PROMOTION_PATTERN = r'(?:\=)?[NBRQ]'
+PAWN_PATTERN = f'(?:[a-h]x)?{COORDINATE_PATTERN}(?:{PROMOTION_PATTERN})?'
+PIECE_PATTERN = f'(?:[NBRQK][a-h1-8]?x?{COORDINATE_PATTERN})'
+CHECK_PATTERN = '[+#]'
+ONCE_PATTERN = '{1}'
+MOVE_PATTERN = f'(?:{PAWN_PATTERN}|{PIECE_PATTERN}){ONCE_PATTERN}{CHECK_PATTERN}?'
+EVALUATION_PATTERN = '\?\?|\?|\?!|!\?|!|!!'
+MOVE_REGEX = re.compile(f'^(?P<move>{MOVE_PATTERN})(?P<eval>{EVALUATION_PATTERN})?$')
 
 class _Token:
     def __init__(self, s):

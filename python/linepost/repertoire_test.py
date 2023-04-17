@@ -1,6 +1,8 @@
 from parameterized import parameterized
 import linepost.repertoire as repertoire
 
+# TODO: remove parameterized from requirements
+
 @parameterized([
     ('e4', 'e4', []),
     ('Ke2??', 'Ke2', []),
