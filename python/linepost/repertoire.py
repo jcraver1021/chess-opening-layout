@@ -1,5 +1,8 @@
 # Linepost rep
 
+
+# TODO: put all of these into their own classes as appropriate (don't go nuts, but still)
+
 import chess
 import graphviz
 graphviz.set_jupyter_format('png')
