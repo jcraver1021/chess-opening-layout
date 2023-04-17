@@ -1,9 +1,8 @@
-from parameterized import parameterized
 import linepost.move as move
 
 # TODO: Generate these for more complete coverage
 
-@parameterized([
+@pytest.mark.parametrize("token,want_bool", [
     ('e4', True),
     ('c6', True),
     ('e0', False),
@@ -39,7 +38,7 @@ import linepost.move as move
     ('Nbd2', True),
     ('N4d2', True),
     ('Nc4d2', False),
-    ('Nc4d2', False),
+    ('N4cd2', False),
     ('Rxb1', True),
     ('Raxb1', True),
     ('R3xb2', True),
