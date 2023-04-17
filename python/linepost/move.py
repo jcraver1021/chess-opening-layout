@@ -1,13 +1,15 @@
 import re
 
-move_regex = re.compile(r'^(?:(?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?|(?:[NBRQK]x?[a-h][1-8])){1}[+#]?$')
+move_regex = re.compile(r'^((?:(?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?|(?:[NBRQK]x?[a-h1-8]?[a-h][1-8])){1}[+#]?)(\?\?|\?|!|!\?|\?!|!!)?$')
 
 # (?:X) represents a non capturing group
 # coord: [a-h][1-8]
 # pawn: (?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?
 # piece: (?:[NBRQK]x?[a-h1-8]?[a-h][1-8])
 # check: [+#]?
-# combination (?:(?:[a-h][1-8]x)?[a-h][1-8](?:(?:\=)?[NBRQ])|(?:[NBRQK]x?[a-h][1-8])){1}[+#]?
+# combination (capturable): ((?:(?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?|(?:[NBRQK]x?[a-h1-8]?[a-h][1-8])){1}[+#]?)
+# evaluation (capturable): (\?\?|\?|!|!\?|\?!|!!)?
+# final: ((?:(?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?|(?:[NBRQK]x?[a-h1-8]?[a-h][1-8])){1}[+#]?)(\?\?|\?|!|!\?|\?!|!!)?
 
 def is_chess_move(token):
     move_regex.match() is not None
