@@ -3,7 +3,7 @@ import linepost.move as move
 
 # TODO: Generate these for more complete coverage
 
-@pytest.mark.parametrize("token,want_bool", [
+@pytest.mark.parametrize("string,want_bool", [
     ('e4', True),
     ('c6', True),
     ('e0', False),
@@ -55,7 +55,9 @@ import linepost.move as move
     ('a4!?', True),
     ('!', False),
     ('?', False),
+    ('chess move', False),
 ])
-def test_is_chess_move(token, want_bool):
-    got_bool = move.is_chess_move(token)
+def test_is_chess_move(string, want_bool):
+    token = move._Token(string)
+    got_bool = token.is_chess_move()
     assert want_bool == got_bool
