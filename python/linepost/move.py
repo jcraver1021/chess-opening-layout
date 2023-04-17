@@ -12,7 +12,7 @@ move_regex = re.compile(r'^((?:(?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?|(?:[NBRQK
 # final: ((?:(?:[a-h]x)?[a-h][1-8](?:(?:\=)?[NBRQ])?|(?:[NBRQK]x?[a-h1-8]?[a-h][1-8])){1}[+#]?)(\?\?|\?|!|!\?|\?!|!!)?
 
 def is_chess_move(token):
-    return move_regex.match() is not None
+    return move_regex.match(token) is not None
 
 def tokenize_line(line):
     # try to tokenize it and join together stuff that's not a move
