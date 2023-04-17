@@ -1,3 +1,4 @@
+import pytest
 import linepost.move as move
 
 # TODO: Generate these for more complete coverage
