@@ -19,10 +19,9 @@ def test_lines(string, want_labels, want_evals_by_index, want_remarks_by_index):
         assert move.remarks == want_remarks_by_index.get(i, [])
 
 @pytest.mark.parametrize("string", [
-    # "Ke0 e5", invalid moves don't parse currently
     "e5",
     "e4 Bc5",
-    # "e4 e5 O-O O-O", castles needs to be defined
+    "e4 e5 O-O O-O",
 ])
 def test_invalid_lines(string):
     with pytest.raises(chess.IllegalMoveError):

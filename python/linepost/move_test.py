@@ -54,6 +54,18 @@ import linepost.move as lpmove
     ('a4!?', True),
     ('!', False),
     ('?', False),
+    ('o', False),
+    ('o-o', True),
+    ('o-o-o', True),
+    ('o-o#', True),
+    ('o-o-o??', True),
+    ('o-o-o-o', False),
+    ('O', False),
+    ('O-O', True),
+    ('O-O-O', True),
+    ('O-O+', True),
+    ('O-O-O!!', True),
+    ('O-O-O-O', False),
     ('chess move', False),
 ])
 def test_is_chess_move(string, want_bool):
