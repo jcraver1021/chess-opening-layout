@@ -31,10 +31,6 @@ class Token:
 
 class Move:
     def __init__(self, position, label, evaluation=None, remarks=None):
-        print('new move')
-        print(label)
-        print(evaluation)
-        print(remarks)
         self.position = position
         self.label = label
         self.evaluation = evaluation

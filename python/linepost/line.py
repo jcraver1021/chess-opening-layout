@@ -23,8 +23,6 @@ class Line:
         position = self.start
         # Add None at the end so we can serve the final chess move.
         for token in self._tokens + [None]:
-            print(f'remark: {remark}')
-            print(f'remarks: {remarks}')
             if token is None or token.is_chess_move():
                 if remark:
                     remarks.append(' '.join(remark))
