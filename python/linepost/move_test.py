@@ -1,5 +1,5 @@
 import pytest
-import linepost.move as move
+import linepost.move as lpmove
 
 # TODO: Generate these for more complete coverage
 @pytest.mark.parametrize("string,want_bool", [
@@ -57,7 +57,7 @@ import linepost.move as move
     ('chess move', False),
 ])
 def test_is_chess_move(string, want_bool):
-    token = move.Token(string)
+    token = lpmove.Token(string)
     got_bool = token.is_chess_move()
     assert want_bool == got_bool
 
@@ -67,7 +67,7 @@ def test_is_chess_move(string, want_bool):
     ('Nf3!!', 'Nf3', '!!'),
 ])
 def test_tokens(string, want_move, want_eval):
-    token = move.Token(string)
+    token = lpmove.Token(string)
     assert want_move == token.get_move()
     assert want_eval == token.get_evaluation()
 
@@ -77,5 +77,5 @@ def test_tokens(string, want_move, want_eval):
     ('Nf3!!', 'Nf3!!'),
 ])
 def test_tokens(string, want):
-    token = move.Token(string)
+    token = lpmove.Token(string)
     assert want == str(token)

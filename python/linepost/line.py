@@ -1,5 +1,5 @@
 import chess
-from linepost.move import Move, Token
+import linepost.move as lpmove
 
 SPLIT_CHAR = '|'
 # TODO: add a character for alt-lines
@@ -10,14 +10,14 @@ class Line:
     def __init__(self, line, starting_position=None):
         self._line_raw = line
         # Replace split with space + split so that we don't have to split tokens further
-        self._tokens = [Token(token_str) for token_str in line.replace(SPLIT_CHAR, f' {SPLIT_CHAR}').split()]
+        self._tokens = [lpmove.Token(token_str) for token_str in line.replace(SPLIT_CHAR, f' {SPLIT_CHAR}').split()]
         if starting_position is None:
             starting_position = chess.Board()
         self.start = starting_position
         self.moves = [move for move in self._construct_moves()]
     
     def _construct_moves(self):
-        last_chess_token = Token('start')
+        last_chess_token = lpmove.Token('start')
         remarks = []
         remark = []
         position = self.start
@@ -28,7 +28,7 @@ class Line:
             if token is None or token.is_chess_move():
                 if remark:
                     remarks.append(' '.join(remark))
-                yield Move(position, last_chess_token.get_move(), last_chess_token.get_evaluation(), remarks)
+                yield lpmove.Move(position, last_chess_token.get_move(), last_chess_token.get_evaluation(), remarks)
                 if token is not None:
                     remarks = []
                     remark = []
