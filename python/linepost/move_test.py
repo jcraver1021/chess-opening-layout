@@ -57,7 +57,7 @@ import linepost.move as move
     ('chess move', False),
 ])
 def test_is_chess_move(string, want_bool):
-    token = move._Token(string)
+    token = move.Token(string)
     got_bool = token.is_chess_move()
     assert want_bool == got_bool
 
@@ -67,6 +67,15 @@ def test_is_chess_move(string, want_bool):
     ('Nf3!!', 'Nf3', '!!'),
 ])
 def test_tokens(string, want_move, want_eval):
-    token = move._Token(string)
+    token = move.Token(string)
     assert want_move == token.get_move()
     assert want_eval == token.get_evaluation()
+
+@pytest.mark.parametrize("string,want", [
+    ('great move', 'great move'),
+    ('Nf3', 'Nf3'),
+    ('Nf3!!', 'Nf3!!'),
+])
+def test_tokens(string, want):
+    token = move.Token(string)
+    assert want == str(token)

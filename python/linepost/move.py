@@ -7,14 +7,15 @@ PIECE_PATTERN = f'(?:[NBRQK][a-h1-8]?x?{COORDINATE_PATTERN})'
 CHECK_PATTERN = '[+#]'
 ONCE_PATTERN = '{1}'
 MOVE_PATTERN = f'(?:{PAWN_PATTERN}|{PIECE_PATTERN}){ONCE_PATTERN}{CHECK_PATTERN}?'
-EVALUATION_PATTERN = '\?\?|\?|\?!|!\?|!|!!'
+EVALUATION_PATTERN = r'\?\?|\?|\?!|!\?|!|!!'
 MOVE_LABEL = 'move'
 EVAL_LABEL = 'eval'
 MOVE_REGEX = re.compile(f'^(?P<{MOVE_LABEL}>{MOVE_PATTERN})(?P<{EVAL_LABEL}>{EVALUATION_PATTERN})?$')
 
-class _Token:
+class Token:
     def __init__(self, s):
-        self._match = MOVE_REGEX.match(s)
+        self._raw = s
+        self._match = MOVE_REGEX.match(self._raw)
 
     def is_chess_move(self):
         return self._match is not None
@@ -24,9 +25,16 @@ class _Token:
 
     def get_evaluation(self):
         return self._match.group(EVAL_LABEL) if self.is_chess_move() else None
+    
+    def __str__(self):
+        return self._raw
 
 class Move:
-    def __init__(self, position, label, evaluation=None, remarks=None, next_moves=None):
+    def __init__(self, position, label, evaluation=None, remarks=None):
+        print('new move')
+        print(label)
+        print(evaluation)
+        print(remarks)
         self.position = position
         self.label = label
         self.evaluation = evaluation
@@ -34,7 +42,3 @@ class Move:
             self.remarks = remarks
         else:
             self.remarks = []
-        if next_moves:
-            self.next_moves = next_moves
-        else:
-            self.next_moves = []
