@@ -1,7 +1,8 @@
+# Stores a single line based on algebraic notation.
+
 import chess
 import linepost.position as lppos
 import re
-
 
 COORDINATE_PATTERN = '[a-h][1-8]'
 PROMOTION_PATTERN = r'(?:\=)?[NBRQ]'
@@ -14,13 +15,16 @@ MOVE_PATTERN = f'(?:{PAWN_PATTERN}|{PIECE_PATTERN}|{CASTLES_PATTERN}){ONCE_PATTE
 EVALUATION_PATTERN = r'\?\?|\?|\?!|!\?|!|!!'
 MOVE_LABEL = 'move'
 EVAL_LABEL = 'eval'
-MOVE_REGEX = re.compile(f'^(?P<{MOVE_LABEL}>{MOVE_PATTERN})(?P<{EVAL_LABEL}>{EVALUATION_PATTERN})?$')  # noqa: E501
+MOVE_REGEX = re.compile(
+    f'^(?P<{MOVE_LABEL}>{MOVE_PATTERN})(?P<{EVAL_LABEL}>{EVALUATION_PATTERN})?$'
+)  # noqa: E501
 
 
 class Token:
     """Token is the textual representation of a chess move, or a comment
     thereupon.
     """
+
     def __init__(self, s):
         self._raw = s
         self._match = MOVE_REGEX.match(self._raw)
@@ -43,12 +47,12 @@ SPLIT_CHAR = '|'
 # These will be parsed as alternate remarks
 # Rename both constants so it's clear what they're for.
 
-
 START_TOKEN = Token('start')
 END_TOKEN = Token('end')
 
 
 class Line:
+
     def __init__(self, line, starting_position=None):
         self._line_raw = line
         # Replace split with space + split to avoid later splitting.
@@ -76,9 +80,7 @@ class Line:
                 if last_chess_token is not START_TOKEN:
                     position = position.make_move(
                         last_chess_token.get_move(),
-                        last_chess_token.get_evaluation(),
-                        remarks
-                    )
+                        last_chess_token.get_evaluation(), remarks)
                     yield position
                 if token is not END_TOKEN:
                     remarks = []

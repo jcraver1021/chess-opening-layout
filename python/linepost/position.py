@@ -1,7 +1,8 @@
-# doc
+# Position and Move are the nodes and edges of the game graph.
 
 
 class Position:
+
     def __init__(self, board):
         self.board = board
         self.moves = []
@@ -9,8 +10,8 @@ class Position:
     def make_move(self, move, evaluation=None, remarks=None):
         next_board = self.board.copy()
         next_board.push_san(move)
-        self.moves.append(Move(self.board, next_board,
-                                      move, evaluation, remarks))
+        self.moves.append(
+            Move(self.board, next_board, move, evaluation, remarks))
         return Position(next_board)
 
     def merge(self, other):
@@ -24,8 +25,12 @@ class Move:
     """Move represents the transition from one position to another.
     """
 
-    def __init__(self, from_position, to_position, label,
-                 evaluation=None, remarks=None):
+    def __init__(self,
+                 from_position,
+                 to_position,
+                 label,
+                 evaluation=None,
+                 remarks=None):
         self.from_position = from_position
         self.to_position = to_position
         self.label = label

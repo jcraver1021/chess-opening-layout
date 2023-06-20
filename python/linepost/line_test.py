@@ -87,15 +87,23 @@ def test_tokens(string, want_move, want_eval):
     assert want_eval == token.get_evaluation()
 
 
-@pytest.mark.parametrize("string,want_labels,want_evals_by_index,want_remarks_by_index", [  # noqa: E501
-    ('e4 e5 Nf3', ['e4', 'e5', 'Nf3'], {}, {}),
-    ('e4 e5 Nf3 Nc6', ['e4', 'e5', 'Nf3', 'Nc6'], {}, {}),
-    ('', [], {}, {}),
-    ('e4', ['e4'], {}, {}),
-    ('d4|I better not see another London d5 Bf4?!|really?!|goddammit', ['d4', 'd5', 'Bf4'], {3: '?!'}, {1: ['I better not see another London'], 3: ['really?!', 'goddammit']}),  # noqa: E501
-])
-def test_lines(string, want_labels,
-               want_evals_by_index, want_remarks_by_index):
+@pytest.mark.parametrize(
+    "string,want_labels,want_evals_by_index,want_remarks_by_index",
+    [  # noqa: E501
+        ('e4 e5 Nf3', ['e4', 'e5', 'Nf3'], {}, {}),
+        ('e4 e5 Nf3 Nc6', ['e4', 'e5', 'Nf3', 'Nc6'], {}, {}),
+        ('', [], {}, {}),
+        ('e4', ['e4'], {}, {}),
+        ('d4|I better not see another London d5 Bf4?!|really?!|goddammit',
+         ['d4', 'd5', 'Bf4'], {
+             3: '?!'
+         }, {
+             1: ['I better not see another London'],
+             3: ['really?!', 'goddammit']
+         }),  # noqa: E501
+    ])
+def test_lines(string, want_labels, want_evals_by_index,
+               want_remarks_by_index):
     line = lpline.Line(string)
     assert len(want_labels) + 1 == len(line.line)
     for i, position in enumerate(line.line):
