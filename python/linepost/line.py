@@ -1,6 +1,42 @@
 import chess
-import linepost.move as lpmove
 import linepost.position as lppos
+import re
+
+
+COORDINATE_PATTERN = '[a-h][1-8]'
+PROMOTION_PATTERN = r'(?:\=)?[NBRQ]'
+PAWN_PATTERN = f'(?:[a-h]x)?{COORDINATE_PATTERN}(?:{PROMOTION_PATTERN})?'
+PIECE_PATTERN = f'(?:[NBRQK][a-h1-8]?x?{COORDINATE_PATTERN})'
+CASTLES_PATTERN = '[oO](?:-[oO]){1,2}'
+CHECK_PATTERN = '[+#]'
+ONCE_PATTERN = '{1}'
+MOVE_PATTERN = f'(?:{PAWN_PATTERN}|{PIECE_PATTERN}|{CASTLES_PATTERN}){ONCE_PATTERN}{CHECK_PATTERN}?'  # noqa: E501
+EVALUATION_PATTERN = r'\?\?|\?|\?!|!\?|!|!!'
+MOVE_LABEL = 'move'
+EVAL_LABEL = 'eval'
+MOVE_REGEX = re.compile(f'^(?P<{MOVE_LABEL}>{MOVE_PATTERN})(?P<{EVAL_LABEL}>{EVALUATION_PATTERN})?$')  # noqa: E501
+
+
+class Token:
+    """Token is the textual representation of a chess move, or a comment
+    thereupon.
+    """
+    def __init__(self, s):
+        self._raw = s
+        self._match = MOVE_REGEX.match(self._raw)
+
+    def is_chess_move(self):
+        return self._match is not None
+
+    def get_move(self):
+        return self._match.group(MOVE_LABEL) if self.is_chess_move() else None
+
+    def get_evaluation(self):
+        return self._match.group(EVAL_LABEL) if self.is_chess_move() else None
+
+    def __str__(self):
+        return self._raw
+
 
 SPLIT_CHAR = '|'
 # TODO: add a character for alt-lines
@@ -8,8 +44,8 @@ SPLIT_CHAR = '|'
 # Rename both constants so it's clear what they're for.
 
 
-START_TOKEN = lpmove.Token('start')
-END_TOKEN = lpmove.Token('end')
+START_TOKEN = Token('start')
+END_TOKEN = Token('end')
 
 
 class Line:
@@ -17,7 +53,7 @@ class Line:
         self._line_raw = line
         # Replace split with space + split to avoid later splitting.
         self._tokens = [
-            lpmove.Token(token_str) for token_str in line.replace(
+            Token(token_str) for token_str in line.replace(
                 SPLIT_CHAR, f' {SPLIT_CHAR}').split()
         ]
         if starting_position is None:
