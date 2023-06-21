@@ -1,8 +1,11 @@
-# Stores a single line based on algebraic notation.
+"""Line stores a single opening line from algebraic notation.
+"""
 
 import chess
 import linepost.position as lppos
 import re
+
+from typing import Generator, Optional
 
 COORDINATE_PATTERN = '[a-h][1-8]'
 PROMOTION_PATTERN = r'(?:\=)?[NBRQ]'
@@ -21,21 +24,43 @@ MOVE_REGEX = re.compile(
 
 
 class Token:
-    """Token is the textual representation of a chess move, or a comment
-    thereupon.
+    """Textual representation of a chess move, evaluation, or comment.
+
+    It can be any legal chess move, with or without evaluations (e.g. ?, !), or
+    it can be part of a commentary about a move or position.
     """
 
-    def __init__(self, s):
+    def __init__(self, s: str):
+        """Initializes the token based on whether it's chess move.
+
+        Args:
+            s: The raw string.
+        """
         self._raw = s
         self._match = MOVE_REGEX.match(self._raw)
 
-    def is_chess_move(self):
+    def is_chess_move(self) -> bool:
+        """Whether this token represents a chess move.
+
+        Returns:
+            Whether this move matches the compiled MOVE_REGEX.
+        """
         return self._match is not None
 
-    def get_move(self):
+    def get_move(self) -> Optional[str]:
+        """If this is a chess move, returns the move label.
+
+        Returns:
+            The move portion of the chess token.
+        """
         return self._match.group(MOVE_LABEL) if self.is_chess_move() else None
 
-    def get_evaluation(self):
+    def get_evaluation(self) -> Optional[str]:
+        """If this is a chess move, returns the evaluation portion.
+
+        Returns:
+            The evaluation portion of the chess token.
+        """
         return self._match.group(EVAL_LABEL) if self.is_chess_move() else None
 
     def __str__(self):
@@ -52,26 +77,52 @@ END_TOKEN = Token('end')
 
 
 class Line:
+    """A single line (no variation) of a chess opening.
 
-    def __init__(self, line, starting_position=None):
+    Parses the entire line, including commentary, and stores it as a list of
+    list of Position objects (with Move objects as the edges). Each
+    Position will have a Move link to each subsequent position.
+
+    Attributes:
+        initial_board: The chess.Board representing the initial position.
+        line: The list of Position objects in the line.
+    """
+
+    def __init__(self,
+                 line: str,
+                 initial_board: Optional[chess.Board] = None) -> None:
+        """Initializes the line
+
+        Args:
+            line: A string representing the opening line and commentary.
+            initial_board: The initial state of the chess board at the beginning
+                of the line (defaults to the starting position).
+        Raises:
+            ValueError if the line cannot be completely parsed.
+        """
         self._line_raw = line
         # Replace split with space + split to avoid later splitting.
         self._tokens = [
             Token(token_str) for token_str in line.replace(
                 SPLIT_CHAR, f' {SPLIT_CHAR}').split()
         ]
-        if starting_position is None:
-            starting_position = chess.Board()
-        self.start = lppos.Position(starting_position)
-        self.line = [self.start]
+        if initial_board is None:
+            initial_board = chess.Board()
+        self._start = lppos.Position(initial_board)
+        self.line = [self._start]
         self.line.extend(
             [position for position in self._construct_positions()])
 
-    def _construct_positions(self):
+    def _construct_positions(self) -> Generator[lppos.Position, None, None]:
+        """Generates the positions based on this line.
+
+        Returns:
+            A generator yielding each Position based on this line.
+        """
         last_chess_token = START_TOKEN
         remarks = []
         remark = []
-        position = self.start
+        position = self._start
         # Add None at the end so we can serve the final chess move.
         for token in self._tokens + [END_TOKEN]:
             if token in {START_TOKEN, END_TOKEN} or token.is_chess_move():

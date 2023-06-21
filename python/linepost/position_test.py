@@ -14,7 +14,7 @@ def split_tokens(line, position=None):
 @pytest.mark.parametrize("move,evaluation,remarks", [
     ("e4", None, []),
     ("Nc3", "?!", ["Why, tho?"]),
-    ("b4", "!!", ["Hi, lularobs!", "Gimme dat center pawn!"]),
+    ("b4", "!!", ["Hi, lularobs!", "bishop bait!"]),
 ])
 def test_move(move, evaluation, remarks):
     pos = lppos.Position(chess.Board())
