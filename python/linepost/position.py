@@ -1,5 +1,7 @@
 # Position and Move are the nodes and edges of the game graph.
 
+import chess
+
 
 class Position:
 
@@ -8,15 +10,22 @@ class Position:
         self.moves = []
 
     def make_move(self, move, evaluation=None, remarks=None):
-        next_board = self.board.copy()
-        next_board.push_san(move)
-        self.moves.append(
-            Move(self.board, next_board, move, evaluation, remarks))
-        return Position(next_board)
+        try:
+            next_board = self.board.copy()
+            next_board.push_san(move)
+            next_position = Position(next_board)
+            self.moves.append(
+                Move(self, next_position, move, evaluation, remarks))
+            return next_position
+        except chess.IllegalMoveError as exc:
+            raise ValueError(
+                f'Move {move} is illegal from board {self.board.fen()}')
 
     def merge(self, other):
-        if self.board.fen() != other.board.fen():
-            raise ValueError('Cannot merge differing positions')
+        fen1, fen2 = self.board.fen(), other.board.fen()
+        if fen1 != fen2:
+            raise ValueError(
+                f'Cannot merge differing positions {fen1} and {fen2}')
 
         self.moves.extend(other.moves)
 

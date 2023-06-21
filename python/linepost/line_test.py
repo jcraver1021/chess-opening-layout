@@ -1,4 +1,3 @@
-import chess
 import pytest
 import linepost.line as lpline
 
@@ -122,5 +121,5 @@ def test_lines(string, want_labels, want_evals_by_index,
     "e4 e5 O-O O-O",
 ])
 def test_invalid_lines(string):
-    with pytest.raises(chess.IllegalMoveError):
+    with pytest.raises(ValueError):
         _ = lpline.Line(string)

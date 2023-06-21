@@ -11,6 +11,33 @@ def split_tokens(line, position=None):
     return position
 
 
+@pytest.mark.parametrize("move,evaluation,remarks", [
+    ("e4", None, []),
+    ("Nc3", "?!", ["Why, tho?"]),
+    ("b4", "!!", ["Hi, lularobs!", "Gimme dat center pawn!"]),
+])
+def test_move(move, evaluation, remarks):
+    pos = lppos.Position(chess.Board())
+    next_pos = pos.make_move(move, evaluation, remarks)
+    assert len(pos.moves) == 1
+    assert pos.moves[0].label == move
+    assert pos.moves[0].evaluation == evaluation
+    assert pos.moves[0].remarks == remarks
+    assert pos.moves[0].from_position == pos
+    assert pos.moves[0].to_position == next_pos
+
+
+@pytest.mark.parametrize("move", [
+    ("e5"),
+    ("Ke2"),
+    ("O-O"),
+])
+def test_invalid_move(move):
+    pos = lppos.Position(chess.Board())
+    with pytest.raises(ValueError):
+        _ = pos.make_move(move)
+
+
 @pytest.mark.parametrize("line,branch1,branch2", [
     ("e4", "e5", "c5"),
     ("e4 c6 d4 d5", "Nc3 dxe4", "e5 c5"),
