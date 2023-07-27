@@ -112,7 +112,7 @@ class Line:
         self.game = game
         if initial_board is None:
             initial_board = chess.Board()
-        self._start = Position(game, initial_board)
+        self._start = game.get_position(initial_board)
         self.line = [self._start]
         self.line.extend(
             [position for position in self._construct_positions()])
