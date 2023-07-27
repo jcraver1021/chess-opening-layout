@@ -70,9 +70,10 @@ class Token:
 
 
 SPLIT_CHAR = '|'
-# TODO: add a character for alt-lines
+# TODO: Add a character for alt-lines
 # These will be parsed as alternate remarks
 # Rename both constants so it's clear what they're for.
+# TODO: Add designation for a non-initial starting position.
 
 START_TOKEN = Token('start')
 END_TOKEN = Token('end')
