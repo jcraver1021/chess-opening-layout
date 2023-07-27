@@ -2,7 +2,9 @@
 """
 
 import chess
-import linepost.position as lppos
+from linepost.position import Game
+from linepost.position import Move
+from linepost.position import Position
 import re
 
 from typing import Generator, Optional
@@ -20,7 +22,7 @@ MOVE_LABEL = 'move'
 EVAL_LABEL = 'eval'
 MOVE_REGEX = re.compile(
     f'^(?P<{MOVE_LABEL}>{MOVE_PATTERN})(?P<{EVAL_LABEL}>{EVALUATION_PATTERN})?$'
-)  # noqa: E501
+)
 
 
 class Token:
@@ -90,6 +92,7 @@ class Line:
 
     def __init__(self,
                  line: str,
+                 game: Game,
                  initial_board: Optional[chess.Board] = None) -> None:
         """Initializes the line
 
@@ -106,14 +109,15 @@ class Line:
             Token(token_str) for token_str in line.replace(
                 SPLIT_CHAR, f' {SPLIT_CHAR}').split()
         ]
+        self.game = game
         if initial_board is None:
             initial_board = chess.Board()
-        self._start = lppos.Position(initial_board)
+        self._start = Position(game, initial_board)
         self.line = [self._start]
         self.line.extend(
             [position for position in self._construct_positions()])
 
-    def _construct_positions(self) -> Generator[lppos.Position, None, None]:
+    def _construct_positions(self) -> Generator[Position, None, None]:
         """Generates the positions based on this line.
 
         Returns:

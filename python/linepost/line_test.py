@@ -1,5 +1,7 @@
 import pytest
-import linepost.line as lpline
+from linepost.line import Line
+from linepost.line import Token
+from linepost.position import Game
 
 
 # TODO: Generate these for more complete coverage
@@ -70,7 +72,7 @@ import linepost.line as lpline
     ('chess move', False),
 ])
 def test_is_chess_move(string, want_bool):
-    token = lpline.Token(string)
+    token = Token(string)
     got_bool = token.is_chess_move()
     assert want_bool == got_bool
 
@@ -81,7 +83,7 @@ def test_is_chess_move(string, want_bool):
     ('Nf3!!', 'Nf3', '!!'),
 ])
 def test_tokens(string, want_move, want_eval):
-    token = lpline.Token(string)
+    token = Token(string)
     assert want_move == token.get_move()
     assert want_eval == token.get_evaluation()
 
@@ -97,20 +99,24 @@ def test_tokens(string, want_move, want_eval):
          ['d4', 'd5', 'Bf4'], {
              3: '?!'
          }, {
-             1: ['I better not see another London'],
-             3: ['really?!', 'goddammit']
+             1: {'I better not see another London'},
+             3: {'really?!', 'goddammit'}
          }),  # noqa: E501
     ])
 def test_lines(string, want_labels, want_evals_by_index,
                want_remarks_by_index):
-    line = lpline.Line(string)
+    game = Game()
+    line = Line(string, game)
     assert len(want_labels) + 1 == len(line.line)
     for i, position in enumerate(line.line):
         if i < len(line.line) - 1:
-            move = position.moves[0]
+            move = None
+            for move_key in position.moves:
+                move = position.moves[move_key]
+                break
             assert move.label == want_labels[i]
-            assert move.evaluation == want_evals_by_index.get(i + 1, None)
-            assert move.remarks == want_remarks_by_index.get(i + 1, [])
+            assert move.evaluation == want_evals_by_index.get(i + 1, '')
+            assert move.remarks == want_remarks_by_index.get(i + 1, set())
         else:
             assert len(position.moves) == 0
 
@@ -121,5 +127,6 @@ def test_lines(string, want_labels, want_evals_by_index,
     "e4 e5 O-O O-O",
 ])
 def test_invalid_lines(string):
+    game = Game()
     with pytest.raises(ValueError):
-        _ = lpline.Line(string)
+        _ = Line(string, game)
