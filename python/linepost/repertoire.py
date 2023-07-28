@@ -16,6 +16,7 @@ class Repertoire:
         lines: All Line objects which constructed the game graph.
     """
 
+    @classmethod
     def from_lines(cls,
                    line_source: Iterable[str],
                    rep: Optional['Repertoire'] = None) -> 'Repertoire':
@@ -32,7 +33,9 @@ class Repertoire:
         if rep is None:
             rep = Repertoire()
         for line in line_source:
-            rep.add_line(line)
+            line = line.strip()
+            if line and not line.startswith('#'):
+                rep.add_line(line)
         return rep
 
     def __init__(self) -> None:
