@@ -1,7 +1,6 @@
 import chess
 import pytest
-from linepost.position import Game
-from linepost.position import Position
+from linepost.position import Game, Position
 
 
 @pytest.mark.parametrize("move_label,evaluation,remarks", [

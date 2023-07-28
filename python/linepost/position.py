@@ -3,7 +3,7 @@
 
 import chess
 
-from typing import List, Optional
+from typing import Iterable, Optional
 
 
 class Game:
@@ -58,7 +58,7 @@ class Position:
     def make_move(self,
                   move: str,
                   evaluation: Optional[str] = None,
-                  remarks: Optional[List[str]] = None) -> 'Position':
+                  remarks: Optional[Iterable[str]] = None) -> 'Position':
         """Adds a move from this position.
 
         Stores the move on this position, which links to the new Position
@@ -105,7 +105,7 @@ class Move:
                  to_position: Position,
                  label: str,
                  evaluation: Optional[str] = None,
-                 remarks: Optional[List[str]] = None) -> None:
+                 remarks: Optional[Iterable[str]] = None) -> None:
         self.from_position = from_position
         self.to_position = to_position
         self.label = label

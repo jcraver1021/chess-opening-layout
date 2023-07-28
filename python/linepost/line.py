@@ -2,9 +2,7 @@
 """
 
 import chess
-from linepost.position import Game
-from linepost.position import Move
-from linepost.position import Position
+from linepost.position import Game, Move, Position
 import re
 
 from typing import Generator, Optional

@@ -1,6 +1,5 @@
 import pytest
-from linepost.line import Line
-from linepost.line import Token
+from linepost.line import Line, Token
 from linepost.position import Game
 
 
