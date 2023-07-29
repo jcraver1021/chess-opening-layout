@@ -38,6 +38,23 @@ class Repertoire:
                 rep.add_line(line)
         return rep
 
+    @classmethod
+    def from_file(cls,
+                  filename: str,
+                  rep: Optional['Repertoire'] = None) -> 'Repertoire':
+        """Create a repertoire from lines in a text file.
+
+        Optionally, add these lines to an existing repertoire.
+
+        Args:
+            filename: The name of the file with the lines.
+            rep: The repertoire to add the lines to. Creates one if none provided.
+        Returns:
+            The repertoire with the provided lines.
+        """
+        with open(filename) as file:
+            return Repertoire.from_lines(file.readlines())
+
     def __init__(self) -> None:
         self.game = Game()
         self.lines = []
