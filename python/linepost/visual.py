@@ -1,7 +1,4 @@
-"""Displays the game graph
-
-Assumptions include:
-* Positions are the nodes here as well as the graph, with their label being
+"""Displays the game graph.
 """
 
 import graphviz
@@ -10,6 +7,14 @@ from linepost.position import Game
 
 
 def visualize(game: Game, format: str = 'png') -> graphviz.Digraph:
+    """Returns a graphviz graph of the game.
+
+    Args:
+        game: The game to render.
+        format: The graph format.
+    Returns:
+        The rendered graph.
+    """
     graphviz.set_jupyter_format(format)
     graph = graphviz.Digraph(name='test', graph_attr={'rankdir': 'LR'})
     positions = set()
