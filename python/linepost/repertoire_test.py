@@ -1,12 +1,46 @@
-from parameterized import parameterized
-import linepost.repertoire as repertoire
+import pytest
+from linepost.repertoire import Repertoire
 
-@parameterized([
-    ('e4', 'e4', []),
-    ('Ke2??', 'Ke2', []),
-    ('Qh4;rude;wtf', 'Qh4', ['rude', 'wtf']),
+
+@pytest.mark.parametrize("lines", [
+    [
+        'e4 e5 Nf3',
+        'e4 c5 Nf3',
+    ],
+    [
+        'e4 e5 Nf3',
+        '',
+        'e4 c5 Nf3',
+    ],
+    [
+        'e4 e5 Nf3',
+        '    ',
+        'e4 c5 Nf3',
+    ],
+    [
+        'e4 e5 Nf3',
+        '# Some people hate it, but you can play the Alapin if you want',
+        'e4 c5 c3',
+    ],
+    [
+        'e4 e5 Nf3\n',
+        'e4 c5 Nf3\n',
+    ],
+    [
+        'e4 e5 Nf3\n',
+        '\n',
+        'e4 c5 Nf3\n',
+    ],
+    [
+        'e4 e5 Nf3\n',
+        '    \n',
+        'e4 c5 Nf3\n',
+    ],
+    [
+        'e4 e5 Nf3\n',
+        '# Some people hate it, but you can play the Alapin if you want\n',
+        'e4 c5 c3\n',
+    ],
 ])
-def test_parse_move(input_move, expected_label, expected_remarks):
-    move, _, remarks = repertoire.parse_move(input_move)
-    assert expected_label == move
-    assert expected_remarks == remarks
+def test_lines(lines):
+    _ = Repertoire.from_lines(lines)

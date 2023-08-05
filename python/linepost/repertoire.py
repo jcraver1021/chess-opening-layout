@@ -1,79 +1,65 @@
-# Linepost rep
+"""Repertoire holds the game graph and all ingested lines.
+"""
 
 import chess
-import graphviz
-graphviz.set_jupyter_format('png')
 
-
-colors = {
-    "??": "red",
-    "?": "orange",
-    "?!": "yellow",
-    "!!": "cyan",
-    "!": "blue"
-}
-
-
-def parse_move(move):
-    components = move.split(';')
-    label = components[0]
-    color = "black"
-    remarks = []
-    for assessment in colors:
-        if label.endswith(assessment):
-            color = colors[assessment]
-            label = label.replace(assessment, '')
-    if len(components) >= 2:
-        remarks = [remark for remark in components[1:]]
-    return label, color, remarks
-
-
-def label_move(move, new_turn, move_no):
-    if new_turn:
-        return f'{move_no}. {move}', False, move_no
-    return f'..{move}', True, move_no + 1
+from linepost.position import Game
+from linepost.line import Line
+from typing import Iterable, Optional
 
 
 class Repertoire:
-    def __init__(self, name="Opening Repertoire"):
-        self.name = name
-        self.graph = graphviz.Digraph(name=name, graph_attr={'rankdir':'LR'})
-        self.positions = {}  # map of FENs to chess positions
-        self.edges = set()
-        self.starting_position = chess.Board()
-        self._add_position(self.starting_position, "Start")
+    """The game graph and all lines which constructed it.
 
-    def _add_position(self, position, label, color="black"):
-        fen = position.fen()
-        self.graph.node(fen, label=label, color=color)
-        self.positions[fen] = position
+    Attributes:
+        game: The Game graph.
+        lines: All Line objects which constructed the game graph.
+    """
 
-    def _connect(self, fen1, fen2):
-        edge = (fen1, fen2)
-        if edge not in self.edges:
-          self.graph.edge(*edge)
-          self.edges.add(edge)
-  
-    def _annotate(self, fen, remark):
-        self.graph.node(remark, color="gray")
-        self._connect(remark, fen)
+    @classmethod
+    def from_lines(cls,
+                   line_source: Iterable[str],
+                   rep: Optional['Repertoire'] = None) -> 'Repertoire':
+        """From a list of lines, create a repertoire.
 
-    def add_line(self, moves):
-        last_pos = None
-        new_turn = True
-        move_no = 1
-        for move_entry in moves.split():
-            if last_pos is None:
-                last_pos = self.starting_position
-            next_pos = last_pos.copy()
-            move, color, remarks = parse_move(move_entry)
-            next_pos.push_san(move)
-            move, new_turn, move_no = label_move(move, new_turn, move_no)
-            self._add_position(next_pos, move, color)
-            self._connect(last_pos.fen(), next_pos.fen())
-            for remark in remarks:
-                self._annotate(next_pos.fen(), remark)
-            last_pos = next_pos
+        Optionally, add these lines to an existing repertoire.
 
-    def draw(self):
-        return self.graph
+        Args:
+            line_source: A list of lines (e.g. from a file).
+            rep: The repertoire to add the lines to. Creates one if none provided.
+        Returns:
+            The repertoire with the provided lines.
+        """
+        if rep is None:
+            rep = Repertoire()
+        for line in line_source:
+            line = line.strip()
+            if line and not line.startswith('#'):
+                rep.add_line(line)
+        return rep
+
+    @classmethod
+    def from_file(cls,
+                  filename: str,
+                  rep: Optional['Repertoire'] = None) -> 'Repertoire':
+        """Create a repertoire from lines in a text file.
+
+        Optionally, add these lines to an existing repertoire.
+
+        Args:
+            filename: The name of the file with the lines.
+            rep: The repertoire to add the lines to. Creates one if none provided.
+        Returns:
+            The repertoire with the provided lines.
+        """
+        with open(filename) as file:
+            return Repertoire.from_lines(file.readlines())
+
+    def __init__(self) -> None:
+        self.game = Game()
+        self.lines = []
+
+    def add_line(self, line: str) -> None:
+        """Ingests a line, adding new positions and moves to the Game graph.
+        """
+        self.lines.append(Line(line, self.game))
