@@ -54,6 +54,7 @@ class Position:
         self.game = game
         self.board = board
         self.moves = {}
+        self.labels = set()
 
     def make_move(self,
                   move: str,
@@ -91,6 +92,9 @@ class Position:
     def white_to_move(self) -> bool:
         return self.board.turn == chess.WHITE
 
+    def __str__(self) -> str:
+        return '\n'.join(self.labels)
+
 
 class Move:
     """The transition from one Position to another.
@@ -118,6 +122,7 @@ class Move:
             self.evaluation = ''
         self._key = self._create_key()
         self._s = self._create_str()
+        self.to_position.labels.add(self._s)
         self.remarks = set()
         if remarks:
             self.remarks = self.remarks.union(remarks)
