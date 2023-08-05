@@ -88,6 +88,9 @@ class Position:
                 f'Move {move} is illegal from board {self.board.fen()}'
             ) from exc
 
+    def white_to_move(self) -> bool:
+        return self.board.turn == chess.WHITE
+
 
 class Move:
     """The transition from one Position to another.
@@ -129,7 +132,9 @@ class Move:
 
     def _create_str(self) -> str:
         """Creates the string representation of this move."""
-        return f'{self.label}{self.evaluation}'
+        if self.from_position.white_to_move():
+            return f'{self.from_position.board.fullmove_number}: {self.label}{self.evaluation}'
+        return f'{self.from_position.board.fullmove_number}.. {self.label}{self.evaluation}'
 
     def __repr__(self) -> str:
         return self._key

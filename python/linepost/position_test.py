@@ -24,6 +24,24 @@ def test_move(move_label, evaluation, remarks):
     assert move.to_position == next_pos
 
 
+@pytest.mark.parametrize("moves", [
+    [],
+    ["e4"],
+    ["d4"],
+    ["e4", "c6"],
+    ["e4", "e5", "Nf3"],
+    ["d4", "d5", "c4", "c6"],
+    ["e4", "e5", "Nf3", "Nc6", "Bc4"],
+])
+def test_turn(moves):
+    whites_turn = len(moves) % 2 == 0
+    game = Game()
+    pos = Position(game, chess.Board())
+    for move in moves:
+        pos = pos.make_move(move)
+    assert pos.white_to_move() == whites_turn
+
+
 @pytest.mark.parametrize("move", [
     ("e5"),
     ("Ke2"),
@@ -44,3 +62,23 @@ def test_invalid_move_merge():
     moves = list(pos.moves.values())
     with pytest.raises(ValueError):
         moves[0].merge(moves[1])
+
+
+@pytest.mark.parametrize("moves,want", [
+    (["e4"], "1: e4"),
+    (["d4"], "1: d4"),
+    (["e4", "c6"], "1.. c6"),
+    (["e4", "e5", "Nf3"], "2: Nf3"),
+    (["d4", "d5", "c4", "c6"], "2.. c6"),
+    (["e4", "e5", "Nf3", "Nc6", "Bc4"], "3: Bc4"),
+])
+def test_move_label(moves, want):
+    whites_turn = len(moves) % 2 == 0
+    game = Game()
+    pos = Position(game, chess.Board())
+    pos_old = None
+    for move in moves:
+        pos_old = pos
+        pos = pos.make_move(move)
+    move = list(pos_old.moves.values())[0]
+    assert str(move) == want
