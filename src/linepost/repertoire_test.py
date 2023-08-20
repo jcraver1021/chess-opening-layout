@@ -59,3 +59,35 @@ def test_add_invalid_no_change():
 ])
 def test_lines(lines):
     _ = Repertoire.from_lines(lines)
+
+
+def test_invalid_lines():
+    lines = [
+        "e4 e5 Nf3 Nc6 Bc4 Bc5 b4",
+        "e4 e5 Nf6",
+        "e4 e5 Nf3 Nc6 Bc4 Nf6 d4",
+        "e4 e5 Nf3 d6 e3",
+        "e4 c5 c3",
+    ]
+    with pytest.raises(ValueError):
+        _ = Repertoire.from_lines(lines)
+
+
+def test_skip_invalid():
+    valid_lines = [
+        "e4 e5 Nf3 Nc6 Bc4 Bc5 b4",
+        "e4 e5 Nf3 Nc6 Bc4 Nf6 d4",
+        "e4 c5 c3",
+    ]
+    invalid_lines = [
+        "e4 e5 Nf3 Nc6 Bc4 Bc5 b4",
+        "e4 e5 Nf6",
+        "e4 e5 Nf3 Nc6 Bc4 Nf6 d4",
+        "e4 e5 Nf3 d6 e3",
+        "e4 c5 c3",
+    ]
+
+    valid_rep = Repertoire.from_lines(valid_lines)
+    invalid_rep = Repertoire.from_lines(invalid_lines, skip_invalid=True)
+    assert len(valid_rep.lines) == len(invalid_rep.lines)
+    assert len(valid_rep.game.fens) == len(invalid_rep.game.fens)
