@@ -62,4 +62,12 @@ class Repertoire:
     def add_line(self, line: str) -> None:
         """Ingests a line, adding new positions and moves to the Game graph.
         """
+        # Ingest the line in a new game first in case it fails.
+        try:
+            _ = Line(line, Game())
+        except ValueError as exc:
+            # We could just not catch the exception, but add this step in case
+            # we want to do anything with it later.
+            raise exc
+
         self.lines.append(Line(line, self.game))

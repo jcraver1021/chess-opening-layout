@@ -2,6 +2,21 @@ import pytest
 from linepost.repertoire import Repertoire
 
 
+def test_add_invalid_no_change():
+    rep = Repertoire()
+    rep.add_line('e4 e5 Ke2')
+    with pytest.raises(ValueError):
+        rep.add_line('d4 d4')
+    assert len(rep.lines) == 1
+    assert len(rep.lines[0].line) == 4
+    assert len(rep.game.fens) == 4
+    with pytest.raises(ValueError):
+        rep.add_line('c4 Be5')
+    assert len(rep.lines) == 1
+    assert len(rep.lines[0].line) == 4
+    assert len(rep.game.fens) == 4
+
+
 @pytest.mark.parametrize("lines", [
     [
         'e4 e5 Nf3',
