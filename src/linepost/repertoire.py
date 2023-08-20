@@ -19,6 +19,7 @@ class Repertoire:
     @classmethod
     def from_lines(cls,
                    line_source: Iterable[str],
+                   skip_invalid: bool = False,
                    rep: Optional['Repertoire'] = None) -> 'Repertoire':
         """From a list of lines, create a repertoire.
 
@@ -26,21 +27,29 @@ class Repertoire:
 
         Args:
             line_source: A list of lines (e.g. from a file).
+            skip_invalid: Whether to skip invalid lines.
             rep: The repertoire to add the lines to. Creates one if none provided.
         Returns:
             The repertoire with the provided lines.
+        Raises:
+            ValueError if adding an invalid line and skip_invalid is False.
         """
         if rep is None:
             rep = Repertoire()
         for line in line_source:
             line = line.strip()
             if line and not line.startswith('#'):
-                rep.add_line(line)
+                try:
+                    rep.add_line(line)
+                except ValueError as exc:
+                    if not skip_invalid:
+                        raise exc
         return rep
 
     @classmethod
     def from_file(cls,
                   filename: str,
+                  skip_invalid: bool = False,
                   rep: Optional['Repertoire'] = None) -> 'Repertoire':
         """Create a repertoire from lines in a text file.
 
@@ -48,12 +57,13 @@ class Repertoire:
 
         Args:
             filename: The name of the file with the lines.
+            skip_invalid: Whether to skip invalid lines.
             rep: The repertoire to add the lines to. Creates one if none provided.
         Returns:
             The repertoire with the provided lines.
         """
         with open(filename) as file:
-            return Repertoire.from_lines(file.readlines())
+            return Repertoire.from_lines(file.readlines(), skip_invalid)
 
     def __init__(self) -> None:
         self.game = Game()
@@ -61,5 +71,13 @@ class Repertoire:
 
     def add_line(self, line: str) -> None:
         """Ingests a line, adding new positions and moves to the Game graph.
+
+        Does not mutate the game state if the line is invalid.
+
+        Args:
+            line: A string representing one line in the repertoire.
         """
+        # Ingest the line into a new game first in case it fails.
+        _ = Line(line, Game())
+
         self.lines.append(Line(line, self.game))
