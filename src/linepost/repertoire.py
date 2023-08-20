@@ -2,6 +2,7 @@
 """
 
 import chess
+import graphviz
 
 from linepost.position import Game
 from linepost.line import Line
@@ -83,7 +84,7 @@ class Repertoire:
 
         self.lines.append(Line(line, self.game))
 
-    def visualize(self) -> 'graphviz.Digraph':
+    def visualize(self) -> graphviz.Digraph:
         """Returns a graphviz graph of the game.
 
         Returns:
