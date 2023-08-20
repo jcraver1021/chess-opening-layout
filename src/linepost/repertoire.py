@@ -5,6 +5,7 @@ import chess
 
 from linepost.position import Game
 from linepost.line import Line
+from linepost.visual import visualize
 from typing import Iterable, Optional
 
 
@@ -81,3 +82,11 @@ class Repertoire:
         _ = Line(line, Game())
 
         self.lines.append(Line(line, self.game))
+
+    def visualize(self) -> 'graphviz.Digraph':
+        """Returns a graphviz graph of the game.
+
+        Returns:
+            The rendered graph.
+        """
+        return visualize(self.game)
