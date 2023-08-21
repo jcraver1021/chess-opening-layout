@@ -18,11 +18,35 @@ MOVE_PATTERN = f'(?:{PAWN_PATTERN}|{PIECE_PATTERN}|{CASTLES_PATTERN}){ONCE_PATTE
 EVALUATION_PATTERN = r'\?\?|\?|\?!|!\?|!|!!'
 MOVE_LABEL = 'move'
 EVAL_LABEL = 'eval'
-MOVE_REGEX = re.compile(
-    f'^(?P<{MOVE_LABEL}>{MOVE_PATTERN})(?P<{EVAL_LABEL}>{EVALUATION_PATTERN})?$'
-)
+MOVE_EVAL_PATTERN = f'(?P<{MOVE_LABEL}>{MOVE_PATTERN})(?P<{EVAL_LABEL}>{EVALUATION_PATTERN})?'
+MOVE_REGEX = re.compile(f'^{MOVE_EVAL_PATTERN}$')
 
-# TODO: Combine the above for a line must match regex.
+POS_PREFIX = 'pP'
+MOVE_PREFIX = 'mM'
+PREFIX_PATTERN = f'[{POS_PREFIX}{MOVE_PREFIX}]{ONCE_PATTERN}'
+PREFIX_LABEL = 'prefix'
+REMARK_LABEL = 'remark'
+REMARK_TOKEN_PATTERN = f'(?P<{PREFIX_LABEL}>{PREFIX_PATTERN})"(?P<{REMARK_LABEL}>[^"]*?)"'
+REMARK_PATTERN = re.compile(f'^{REMARK_TOKEN_PATTERN}$')
+
+
+def unlabel_pattern(pattern: str) -> str:
+    return re.sub('P<.*?>', ':', pattern)
+
+
+FULL_MOVE_PATTERN = f'{MOVE_EVAL_PATTERN}(\\s+{REMARK_TOKEN_PATTERN})*'
+FULL_LINE_PATTERN = f'{FULL_MOVE_PATTERN}(\\s+{FULL_MOVE_PATTERN})*'
+FULL_LINE_REGEX = re.compile(f'^{unlabel_pattern(FULL_LINE_PATTERN)}$')
+
+
+def can_parse_line(line: str) -> bool:
+    return FULL_LINE_REGEX.match(line) is not None
+
+
+def parse_line(line: str) -> None:
+    # todo: make this return a tuple of lists
+    if not can_parse_line(line):
+        raise ValueError(f'Line "{line}" cannot be parsed')
 
 
 class Token:

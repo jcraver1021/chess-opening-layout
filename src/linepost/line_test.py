@@ -1,6 +1,14 @@
 import pytest
-from linepost.line import Line, Token
+from linepost.line import Line, Token, can_parse_line, unlabel_pattern
 from linepost.position import Game
+
+
+@pytest.mark.parametrize("pattern,unlabeled_pattern", [
+    ("asdf", "asdf"),
+    ("(?P<label>NBRQK)", "(?:NBRQK)"),
+])
+def test_unlabel_pattern(pattern, unlabeled_pattern):
+    assert unlabel_pattern(pattern) == unlabeled_pattern
 
 
 # TODO: Generate these for more complete coverage
@@ -85,6 +93,22 @@ def test_tokens(string, want_move, want_eval):
     token = Token(string)
     assert want_move == token.get_move()
     assert want_eval == token.get_evaluation()
+
+
+@pytest.mark.parametrize(
+    "string,want_bool",
+    [
+        ('q4', False),
+        ('e4 c"comment"', False),
+        ('e4 d5 k"die"', False),
+        ('e4 p"Best by test" p"Black has many responses"', True),
+        ('d4 m"I better not see another London" d5 Bf4?! m"really?!" m"goddammit" p"I am rooting for Black now"',
+         True),  # noqa: E501
+        ('d4 m"I better not see another London" d5 Bf4?! c"really?!" m"goddammit" p"I am rooting for Black now"',
+         False),  # noqa: E501
+    ])
+def test_can_parse_line(string, want_bool):
+    assert want_bool == can_parse_line(string)
 
 
 @pytest.mark.parametrize(
