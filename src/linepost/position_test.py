@@ -3,23 +3,26 @@ import pytest
 from linepost.position import Game, Position
 
 
-@pytest.mark.parametrize("move_label,evaluation,remarks", [
-    ("e4", "", set()),
-    ("Nc3", "?!", {"Why, tho?"}),
-    ("b4", "!!", {"Hi, lularobs!", "bishop bait!"}),
-])
-def test_move(move_label, evaluation, remarks):
+@pytest.mark.parametrize(
+    "move_label,evaluation,position_remarks,move_remarks", [
+        ("e4", "", set(), set()),
+        ("Nc3", "?!", {"No one in the center"}, {"Why, tho?"}),
+        ("b4", "!!", set(), {"Hi, lularobs!", "bishop bait!"}),
+    ])
+def test_move(move_label, evaluation, position_remarks, move_remarks):
     game = Game()
     pos = Position(game, chess.Board())
-    next_pos = pos.make_move(move_label, evaluation, remarks)
+    next_pos = pos.make_move(move_label, evaluation, position_remarks,
+                             move_remarks)
     assert len(pos.moves) == 1
+    assert next_pos.remarks == position_remarks
     move = None
     for move_key in pos.moves:
         move = pos.moves[move_key]
         break
     assert move.label == move_label
     assert move.evaluation == evaluation
-    assert move.remarks == remarks
+    assert move.remarks == move_remarks
     assert move.from_position == pos
     assert move.to_position == next_pos
 

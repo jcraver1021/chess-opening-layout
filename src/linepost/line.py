@@ -22,6 +22,8 @@ MOVE_REGEX = re.compile(
     f'^(?P<{MOVE_LABEL}>{MOVE_PATTERN})(?P<{EVAL_LABEL}>{EVALUATION_PATTERN})?$'
 )
 
+# TODO: Combine the above for a line must match regex.
+
 
 class Token:
     """Textual representation of a chess move, evaluation, or comment.
@@ -67,12 +69,6 @@ class Token:
         return self._raw
 
 
-SPLIT_CHAR = '|'
-# TODO: Add a character for alt-lines
-# These will be parsed as alternate remarks
-# Rename both constants so it's clear what they're for.
-# TODO: Add designation for a non-initial starting position.
-
 START_TOKEN = Token('start')
 END_TOKEN = Token('end')
 
@@ -103,18 +99,33 @@ class Line:
             ValueError if the line cannot be completely parsed.
         """
         self._line_raw = line
-        # Replace split with space + split to avoid later splitting.
-        self._tokens = [
-            Token(token_str) for token_str in line.replace(
-                SPLIT_CHAR, f' {SPLIT_CHAR}').split()
-        ]
         self.game = game
         if initial_board is None:
             initial_board = chess.Board()
         self._start = game.get_position(initial_board)
         self.line = [self._start]
+        self._extract_remarks()
         self.line.extend(
             [position for position in self._construct_positions()])
+
+    def _extract_remarks(self) -> None:
+        # TODO: Make this a standalone function with its own tests
+        # TODO: Make sure the Position tests pass with the new logic
+        line = self._line_raw
+        self.remarks = re.findall(re.compile(f'[pPmM]".*?"'), line)
+        self.position_remarks = []
+        self.move_remarks = []
+        for remark in self.remarks:
+            if remark[0].lower() == "p":
+                remark_list = self.position_remarks
+                prefix = "p"
+            else:
+                remark_list = self.move_remarks
+                prefix = "m"
+            remark_index = len(remark_list)
+            remark_list.append(remark[2:-1])
+            line = line.replace(remark, f'{prefix}{remark_index}', 1)
+        self.tokens = list(map(Token, line.split()))
 
     def _construct_positions(self) -> Generator[Position, None, None]:
         """Generates the positions based on this line.
@@ -123,28 +134,32 @@ class Line:
             A generator yielding each Position based on this line.
         """
         last_chess_token = START_TOKEN
-        remarks = []
-        remark = []
+        position_remarks = []
+        move_remarks = []
         position = self._start
         # Add None at the end so we can serve the final chess move.
-        for token in self._tokens + [END_TOKEN]:
+        for token in self.tokens + [END_TOKEN]:
             if token in {START_TOKEN, END_TOKEN} or token.is_chess_move():
-                if remark:
-                    remarks.append(' '.join(remark))
                 if last_chess_token is not START_TOKEN:
                     position = position.make_move(
                         last_chess_token.get_move(),
-                        last_chess_token.get_evaluation(), remarks)
+                        last_chess_token.get_evaluation(), position_remarks,
+                        move_remarks)
                     yield position
                 if token is not END_TOKEN:
-                    remarks = []
-                    remark = []
+                    position_remarks = []
+                    move_remarks = []
                     last_chess_token = token
             else:
-                token_str = str(token)
-                if token_str.startswith(SPLIT_CHAR):
-                    if remark:
-                        remarks.append(' '.join(remark))
-                        remark = []
-                    token_str = token_str[1:]
-                remark.append(token_str)
+                pointer = str(token)
+                if len(pointer) < 1:
+                    raise ValueError(
+                        f'Invalid token {token} in line {self._line_raw}')
+                if pointer[0] == "p":
+                    position_remarks.append(self.position_remarks[int(
+                        pointer[1:])])
+                elif pointer[0] == "m":
+                    move_remarks.append(self.move_remarks[int(pointer[1:])])
+                else:
+                    raise ValueError(
+                        f'Invalid token {token} in line {self._line_raw}')

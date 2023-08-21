@@ -42,6 +42,7 @@ class Position:
         game: The game graph to which this position is tied.
         board: The board state at this position.
         moves: A list of moves from this position.
+        remarks: A set of comments about this position.
     """
 
     def __init__(self, game: Game, board: chess.Board) -> None:
@@ -54,12 +55,21 @@ class Position:
         self.game = game
         self.board = board
         self.moves = {}
-        self.labels = set()
+        self.remarks = set()
+
+    def remark(self, remarks: Iterable[str]) -> None:
+        """Adds a list of remarks to the remarks for this position.
+
+        Args:
+            remarks: An iterable collection of remarks to add.
+        """
+        self.remarks = self.remarks.union(remarks)
 
     def make_move(self,
                   move: str,
                   evaluation: Optional[str] = None,
-                  remarks: Optional[Iterable[str]] = None) -> 'Position':
+                  position_remarks: Optional[Iterable[str]] = None,
+                  move_remarks: Optional[Iterable[str]] = None) -> 'Position':
         """Adds a move from this position.
 
         Stores the move on this position, which links to the new Position
@@ -68,7 +78,8 @@ class Position:
         Args:
             move: The algebraic notation of the move.
             evaluation: Commentary on the move (e.g. !, ?).
-            remarks: A list of remarks on the move or position.
+            position_remarks: A list of remarks on the new position.
+            move_remarks: A list of remarks on the move.
         Returns:
             The Position holding the new board state.
         Raise:
@@ -78,7 +89,10 @@ class Position:
             next_board = self.board.copy()
             next_board.push_san(move)
             next_position = self.game.get_position(next_board)
-            next_move = Move(self, next_position, move, evaluation, remarks)
+            if position_remarks is not None:
+                next_position.remark(position_remarks)
+            next_move = Move(self, next_position, move, evaluation,
+                             move_remarks)
             if repr(next_move) in self.moves:
                 self.moves[repr(next_move)].merge(next_move)
             else:
@@ -90,10 +104,15 @@ class Position:
             ) from exc
 
     def white_to_move(self) -> bool:
+        """Returns whether this position is white to move.
+
+        Returns:
+            True if it is White's turn, False otherwise.
+        """
         return self.board.turn == chess.WHITE
 
     def __str__(self) -> str:
-        return '\n'.join(self.labels)
+        return '\n'.join(self.remarks)
 
 
 class Move:
@@ -122,7 +141,6 @@ class Move:
             self.evaluation = ''
         self._key = self._create_key()
         self._s = self._create_str()
-        self.to_position.labels.add(self._s)
         self.remarks = set()
         if remarks:
             self.remarks = self.remarks.union(remarks)
