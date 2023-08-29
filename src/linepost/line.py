@@ -49,6 +49,8 @@ FULL_MOVE_PATTERN = f'{MOVE_EVAL_PATTERN}(\\s+{REMARK_PATTERN})*'
 FULL_LINE_PATTERN = f'{FULL_MOVE_PATTERN}(\\s+{FULL_MOVE_PATTERN})*'
 FULL_LINE_REGEX = re.compile(f'^{unlabel_pattern(FULL_LINE_PATTERN)}$')
 
+# TODO: Combine the above for a line must match regex.
+
 
 class Token:
     """Textual representation of a chess move, evaluation, or comment.

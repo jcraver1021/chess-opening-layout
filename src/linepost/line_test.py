@@ -168,6 +168,7 @@ def test_parse_line_invalid(line):
         ('e4 e5 Nf3', ['e4', 'e5', 'Nf3'], {}, {}, {}),
         ('e4   e5   Nf3', ['e4', 'e5', 'Nf3'], {}, {}, {}),
         ('e4 e5 Nf3 Nc6', ['e4', 'e5', 'Nf3', 'Nc6'], {}, {}, {}),
+
         ('e4', ['e4'], {}, {}, {}),
         ('e4 p"Best by test" p"Black has many responses"', ['e4'], {}, {
             1: {'Black has many responses', 'Best by test'},
