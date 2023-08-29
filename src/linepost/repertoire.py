@@ -1,13 +1,14 @@
 """Repertoire holds the game graph and all ingested lines.
 """
 
+from typing import Iterable, Optional
+
 import chess
 import graphviz
 
-from linepost.position import Game
 from linepost.line import Line
+from linepost.position import Game
 from linepost.visual import visualize
-from typing import Iterable, Optional
 
 
 class Repertoire:

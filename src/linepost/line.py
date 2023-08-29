@@ -240,10 +240,6 @@ class Line:
         line: The list of Position objects in the line.
     """
 
-    @classmethod
-    def from_string(cls, ):
-        pass
-
     def __init__(self,
                  line: str,
                  game: Game,
