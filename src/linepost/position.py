@@ -1,9 +1,9 @@
 """Position and Move are the nodes and edges of the repertoire graph.
 """
 
-import chess
-
 from typing import Iterable, Optional
+
+import chess
 
 
 class Game:

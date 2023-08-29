@@ -1,5 +1,6 @@
 import chess
 import pytest
+
 from linepost.position import Game, Position
 
 
