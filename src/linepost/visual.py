@@ -27,7 +27,7 @@ def visualize(game: Game, format: str = 'png') -> graphviz.Digraph:
         moves = moves.union(position.moves.values())
 
     for move in moves:
-        label = f'{move.label}{move.evaluation}'
+        label = str(move)
         if move.remarks:
             label = '\n'.join([label] + list(move.remarks))
         graph.edge(move.from_position.board.fen(),
