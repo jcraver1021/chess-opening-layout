@@ -1,9 +1,9 @@
 """Position and Move are the nodes and edges of the repertoire graph.
 """
 
-import chess
-
 from typing import Iterable, Optional
+
+import chess
 
 
 class Game:
@@ -82,7 +82,7 @@ class Position:
             move_remarks: A list of remarks on the move.
         Returns:
             The Position holding the new board state.
-        Raise:
+        Raises:
             ValueError if the move is illegal from this position.
         """
         try:
