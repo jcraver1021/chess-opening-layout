@@ -167,8 +167,8 @@ def test_parse_line_invalid(line):
     [
         ('e4 e5 Nf3', ['e4', 'e5', 'Nf3'], {}, {}, {}),
         ('e4   e5   Nf3', ['e4', 'e5', 'Nf3'], {}, {}, {}),
+        ('  e4 e5 Nf3', ['e4', 'e5', 'Nf3'], {}, {}, {}),
         ('e4 e5 Nf3 Nc6', ['e4', 'e5', 'Nf3', 'Nc6'], {}, {}, {}),
-
         ('e4', ['e4'], {}, {}, {}),
         ('e4 p"Best by test" p"Black has many responses"', ['e4'], {}, {
             1: {'Black has many responses', 'Best by test'},
@@ -176,6 +176,10 @@ def test_parse_line_invalid(line):
         ('e4    p"Best by test"   p"Black has many responses"', ['e4'], {}, {
             1: {'Black has many responses', 'Best by test'},
         }, {}),
+        ('    e4    p"Best by test"   p"Black has many responses"', ['e4'], {},
+         {
+             1: {'Black has many responses', 'Best by test'},
+         }, {}),
         (
             'd4 m"I better not see another London" d5 Bf4?! m"really?!" m"goddammit" p"I am rooting for Black now"',  # noqa: E501
             ['d4', 'd5', 'Bf4'],
