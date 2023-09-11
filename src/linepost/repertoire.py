@@ -83,8 +83,6 @@ class Repertoire:
             if line and not line.startswith('#'):
                 try:
                     line_text, index = get_line_and_start(line)
-                    print(line_text)
-                    print(index)
                     if len(rep.lines) > 0:
                         if index >= len(rep.lines[-1].line):
                             raise ValueError(
@@ -137,7 +135,6 @@ class Repertoire:
             initial_board: The initial state of the chess board at the beginning
                 of the line (defaults to the starting position).
         """
-        print(line)
         # Ingest the line into a new game first in case it fails.
         _ = Line(line, Game(), initial_board)
 
@@ -150,3 +147,4 @@ class Repertoire:
             The rendered graph.
         """
         return visualize(self.game)
+
