@@ -47,9 +47,7 @@ def unlabel_pattern(pattern: str) -> str:
 
 FULL_MOVE_PATTERN = f'{MOVE_EVAL_PATTERN}(\\s+{REMARK_PATTERN})*'
 FULL_LINE_PATTERN = f'{FULL_MOVE_PATTERN}(\\s+{FULL_MOVE_PATTERN})*'
-FULL_LINE_REGEX = re.compile(f'^{unlabel_pattern(FULL_LINE_PATTERN)}$')
-
-# TODO: Combine the above for a line must match regex.
+FULL_LINE_REGEX = re.compile(f'^\\s*{unlabel_pattern(FULL_LINE_PATTERN)}$')
 
 
 class Token:
@@ -265,3 +263,4 @@ class Line:
             position for position in generate_positions(
                 tokens, position_remarks, move_remarks, self._start)
         ])
+        self.moves = [str(token) for token in tokens if token.is_chess_move()]
