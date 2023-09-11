@@ -147,4 +147,3 @@ class Repertoire:
             The rendered graph.
         """
         return visualize(self.game)
-
